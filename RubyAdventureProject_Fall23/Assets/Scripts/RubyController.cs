@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class RubyController : MonoBehaviour
 {
+    public static EnemyController instance { get; private set; }
+
     public float speed = 3.0f;
 
     public int maxHealth = 5;
@@ -13,6 +17,9 @@ public class RubyController : MonoBehaviour
 
     public AudioClip throwSound;
     public AudioClip hitSound;
+
+    public GameObject healthIncreasePrefab;
+    public GameObject healthDecreasePrefab;
 
     public int health { get { return currentHealth; } }
     int currentHealth;
@@ -30,6 +37,19 @@ public class RubyController : MonoBehaviour
 
     AudioSource audioSource;
 
+    public TextMeshProUGUI scoreText; // works as TextMeshPro UI element stored in GameObject variable
+    public int score = 0;
+
+    public GameObject loseMenu;
+    public GameObject winMenu;
+    bool gameActive = true;
+
+    private void Awake()
+    {
+        Time.timeScale = 1;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +59,12 @@ public class RubyController : MonoBehaviour
         currentHealth = maxHealth;
 
         audioSource = GetComponent<AudioSource>();
+
+        scoreText.text = "Fixed Robots: " + score.ToString();
+
+
+
+
     }
 
     // Update is called once per frame
@@ -82,7 +108,33 @@ public class RubyController : MonoBehaviour
                     character.DisplayDialog();
                 }
             }
+
         }
+
+        if (health <= 0)
+        {
+            loseMenu.SetActive(true);
+            gameActive = false;
+            Time.timeScale = 0;
+        }
+
+        if (score >= 4)
+        {
+            winMenu.SetActive(true);
+            gameActive = false;
+            Time.timeScale = 0;
+        }
+
+        if (!gameActive)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // this loads the currently active scene
+            }
+        }
+
+
+
     }
 
     void FixedUpdate()
@@ -98,13 +150,27 @@ public class RubyController : MonoBehaviour
     {
         if (amount < 0)
         {
-            if (isInvincible)
+            if (isInvincible) 
                 return;
+        
+                isInvincible = true;
+                invincibleTimer = timeInvincible;
+                animator.SetTrigger("Hit");
+                PlaySound(hitSound);
+        }
 
-            isInvincible = true;
-            invincibleTimer = timeInvincible;
+        if (amount < 0)
+        {
+            GameObject healthDecrease = Instantiate(healthDecreasePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
+
             animator.SetTrigger("Hit");
             PlaySound(hitSound);
+        }
+
+
+        if (amount > 0)
+        {
+            GameObject healthIncrease = Instantiate(healthIncreasePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
         }
 
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
@@ -128,4 +194,12 @@ public class RubyController : MonoBehaviour
     {
         audioSource.PlayOneShot(clip);
     }
+
+    public void ChangeScore(int scoreAmount)
+    {
+        score += scoreAmount;
+        scoreText.text = "Fixed Robots: " + score.ToString();
+
+    }
+    
 }
