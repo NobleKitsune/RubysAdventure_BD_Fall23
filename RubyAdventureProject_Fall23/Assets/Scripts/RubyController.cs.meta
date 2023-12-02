@@ -3,7 +3,17 @@ guid: 45edc40ca7a85164dab59ab68fa2de27
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - projectilePrefab: {instanceID: 0}
+  - throwSound: {instanceID: 0}
+  - hitSound: {instanceID: 0}
+  - WinGame: {instanceID: 0}
+  - hitSlime: {fileID: 8300000, guid: fa6cba83a4316904f9489e7d058b2c15, type: 3}
+  - healthIncreasePrefab: {instanceID: 0}
+  - healthDecreasePrefab: {instanceID: 0}
+  - scoreText: {instanceID: 0}
+  - loseMenu: {instanceID: 0}
+  - winMenu: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

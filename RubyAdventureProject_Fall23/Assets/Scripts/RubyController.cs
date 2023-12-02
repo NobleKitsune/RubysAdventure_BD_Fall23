@@ -9,7 +9,8 @@ public class RubyController : MonoBehaviour
 {
     public static EnemyController instance { get; private set; }
 
-    public float speed = 3.0f;
+    public float speed { get { return currentSpeed; } }  //this was in orig script, DO NOT DELETE, change speed?
+    float currentSpeed; //I added this, Change speed????????????????
 
     public int maxHealth = 5;
 
@@ -17,6 +18,11 @@ public class RubyController : MonoBehaviour
 
     public AudioClip throwSound;
     public AudioClip hitSound;
+    public AudioClip winGame; //Brianna D. added this for first audio edit
+    public AudioClip loseGame; //Hadassah R. added this for first audio edit
+    public AudioClip hitSlime; //Brianna D. added this for second audio edit
+    public AudioClip dialogAppear;//Brianna D. added this for a third audio edit
+
 
     public GameObject healthIncreasePrefab;
     public GameObject healthDecreasePrefab;
@@ -26,7 +32,11 @@ public class RubyController : MonoBehaviour
 
     public float timeInvincible = 2.0f;
     bool isInvincible;
-    float invincibleTimer;
+    public float invincibleTimer;
+
+    public float timeAltered = 4.0f; //Brianna D. added this to slow down ruby down
+    bool isAlteredSpeed;
+    public float alteredSpeedTimer;
 
     Rigidbody2D rigidbody2d;
     float horizontal;
@@ -37,16 +47,20 @@ public class RubyController : MonoBehaviour
 
     AudioSource audioSource;
 
-    public TextMeshProUGUI scoreText; // works as TextMeshPro UI element stored in GameObject variable
+    public TextMeshProUGUI scoreText;
     public int score = 0;
 
     public GameObject loseMenu;
     public GameObject winMenu;
     bool gameActive = true;
+    public GameObject BGM; //Background Music
+
+
 
     private void Awake()
     {
         Time.timeScale = 1;
+        currentHealth = maxHealth;
     }
 
 
@@ -56,13 +70,11 @@ public class RubyController : MonoBehaviour
         rigidbody2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
-        currentHealth = maxHealth;
+        currentSpeed = 3.0f; 
 
         audioSource = GetComponent<AudioSource>();
 
         scoreText.text = "Fixed Robots: " + score.ToString();
-
-
 
 
     }
@@ -70,6 +82,8 @@ public class RubyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("speed = " + currentSpeed.ToString());
+
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 
@@ -92,6 +106,17 @@ public class RubyController : MonoBehaviour
                 isInvincible = false;
         }
 
+        if (isAlteredSpeed)
+        {
+            alteredSpeedTimer -= Time.deltaTime;
+            if (alteredSpeedTimer < 0)
+            { 
+              isAlteredSpeed = false;
+              currentSpeed = 3.0f;
+            }
+               
+        }
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             Launch();
@@ -106,23 +131,10 @@ public class RubyController : MonoBehaviour
                 if (character != null)
                 {
                     character.DisplayDialog();
+                    PlaySound(dialogAppear);
                 }
             }
 
-        }
-
-        if (health <= 0)
-        {
-            loseMenu.SetActive(true);
-            gameActive = false;
-            Time.timeScale = 0;
-        }
-
-        if (score >= 4)
-        {
-            winMenu.SetActive(true);
-            gameActive = false;
-            Time.timeScale = 0;
         }
 
         if (!gameActive)
@@ -134,14 +146,13 @@ public class RubyController : MonoBehaviour
         }
 
 
-
     }
 
     void FixedUpdate()
     {
         Vector2 position = rigidbody2d.position;
-        position.x = position.x + speed * horizontal * Time.deltaTime;
-        position.y = position.y + speed * vertical * Time.deltaTime;
+        position.x = position.x + currentSpeed * horizontal * Time.deltaTime;
+        position.y = position.y + currentSpeed * vertical * Time.deltaTime;
 
         rigidbody2d.MovePosition(position);
     }
@@ -150,13 +161,13 @@ public class RubyController : MonoBehaviour
     {
         if (amount < 0)
         {
-            if (isInvincible) 
+            if (isInvincible)
                 return;
-        
-                isInvincible = true;
-                invincibleTimer = timeInvincible;
-                animator.SetTrigger("Hit");
-                PlaySound(hitSound);
+
+            isInvincible = true;
+            invincibleTimer = timeInvincible;
+            animator.SetTrigger("Hit");
+            PlaySound(hitSound);
         }
 
         if (amount < 0)
@@ -173,7 +184,19 @@ public class RubyController : MonoBehaviour
             GameObject healthIncrease = Instantiate(healthIncreasePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
         }
 
+
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+
+        if (health <= 0)
+        {
+            loseMenu.SetActive(true);
+            gameActive = false;
+            Time.timeScale = 0;
+
+            BGM.GetComponent<AudioSource>().mute = true;
+
+            PlaySound(loseGame);//Hadassah R. Added my first Audio clip.
+        }
 
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
     }
@@ -200,6 +223,53 @@ public class RubyController : MonoBehaviour
         score += scoreAmount;
         scoreText.text = "Fixed Robots: " + score.ToString();
 
+        if (score >= 4)
+        {
+            winMenu.SetActive(true);
+            gameActive = false;
+            Time.timeScale = 0;
+
+            BGM.GetComponent<AudioSource>().mute = true;
+
+            PlaySound(winGame); //Brianna D. This is where I was able to add the audio clip for winning the game
+        }
+
     }
-    
+
+    public void ChangeSpeed(float amount)
+    {
+        if (amount < 0) //When Ruby hits slime, reduce speed
+        {
+            if (isInvincible)
+                return;
+
+            isInvincible = true;
+            invincibleTimer = timeInvincible;
+
+            isAlteredSpeed = true;
+            alteredSpeedTimer = timeAltered;
+
+            animator.SetTrigger("Hit");
+            PlaySound(hitSlime); //Brianna D. This is where I was ablt to add the audio clip for when Ruby hits a Slime Monster
+        }
+
+        if (amount > 0) //When Ruby picks up the PowerPickup, speed is increased
+        {
+
+            isInvincible = true;
+            invincibleTimer = timeInvincible;
+
+            isAlteredSpeed = true;
+            alteredSpeedTimer = timeAltered;
+
+        }
+
+
+
+
+        currentSpeed = Mathf.Clamp(currentSpeed + amount, 1, 5); //how to I change this for speed?
+
+    }
+
+
 }
