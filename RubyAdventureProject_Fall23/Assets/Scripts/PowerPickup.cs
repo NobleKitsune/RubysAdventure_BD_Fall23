@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PowerPickup : MonoBehaviour //Hadassh R.- this is the script I added 
 {
-    public AudioClip collectedPowerUp; //Hadassah R. added for second sound
+    public AudioClip collectedPowerUp; //Hadassah R. added for second sound, plays when the PowerPickup is collected.
 
     void OnTriggerEnter2D(Collider2D other)
     {

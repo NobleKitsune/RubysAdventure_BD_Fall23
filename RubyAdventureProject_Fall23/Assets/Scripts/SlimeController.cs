@@ -67,7 +67,7 @@ public class SlimeController : MonoBehaviour // Brianna D. I Created this new ch
 
         if (controller != null)
         {
-            controller.ChangeSpeed(-2);  //Added this to Reduce Ruby's speed!
+            controller.ChangeSpeed(-2);  // Brianna D.- this  Reduces Ruby's speed!
         }
     }
 
