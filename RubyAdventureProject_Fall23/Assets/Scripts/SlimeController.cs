@@ -30,7 +30,7 @@ public class SlimeController : MonoBehaviour // Brianna D. I Created this new ch
     void Update()
     {
 
-        timer -= Time.deltaTime; //Do I need this??????
+        timer -= Time.deltaTime; 
 
         if (timer < 0)
         {
@@ -61,7 +61,7 @@ public class SlimeController : MonoBehaviour // Brianna D. I Created this new ch
 
     }
 
-    void OnTriggerStay2D(Collider2D other) //This is similar to the damage zone script, triggers reduceSpeed on Ruby
+    void OnTriggerStay2D(Collider2D other) //This is similar to the damage zone script, triggers ChangeSpeed on Ruby (slows her down)
     {
         RubyController controller = other.GetComponent<RubyController>();
 

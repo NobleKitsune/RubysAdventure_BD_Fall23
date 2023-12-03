@@ -9,8 +9,8 @@ public class RubyController : MonoBehaviour
 {
     public static EnemyController instance { get; private set; }
 
-    public float speed { get { return currentSpeed; } }  //this was in orig script, DO NOT DELETE, change speed?
-    float currentSpeed; //I added this, Change speed????????????????
+    public float speed { get { return currentSpeed; } }
+    float currentSpeed;
 
     public int maxHealth = 5;
 
@@ -18,10 +18,11 @@ public class RubyController : MonoBehaviour
 
     public AudioClip throwSound;
     public AudioClip hitSound;
-    public AudioClip winGame; //Brianna D. added this for first audio edit
-    public AudioClip loseGame; //Hadassah R. added this for first audio edit
-    public AudioClip hitSlime; //Brianna D. added this for second audio edit
-    public AudioClip dialogAppear;//Brianna D. added this for a third audio edit
+    public AudioClip winGame; //Brianna D. first sound
+    public AudioClip loseGame; //Hadassah R. first sound
+    public AudioClip hitSlime; //Brianna D. second sound
+    public AudioClip dialogAppear;//Brianna D. third sound
+   
 
 
     public GameObject healthIncreasePrefab;
@@ -131,7 +132,7 @@ public class RubyController : MonoBehaviour
                 if (character != null)
                 {
                     character.DisplayDialog();
-                    PlaySound(dialogAppear);
+                    PlaySound(dialogAppear); //Brianna D- third audio change for when dialog box appears
                 }
             }
 
@@ -195,7 +196,7 @@ public class RubyController : MonoBehaviour
 
             BGM.GetComponent<AudioSource>().mute = true;
 
-            PlaySound(loseGame);//Hadassah R. Added my first Audio clip.
+            PlaySound(loseGame);    //Hadassah R. Added my first Audio clip for losing game.
         }
 
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
@@ -236,9 +237,9 @@ public class RubyController : MonoBehaviour
 
     }
 
-    public void ChangeSpeed(float amount)
+    public void ChangeSpeed(float amount)  //This where: Brianna D.- slowed Ruby's speed when she hit the slime. Haddash R.- increased Ruby's speed  when she picks up PowerPickup.
     {
-        if (amount < 0) //When Ruby hits slime, reduce speed
+        if (amount < 0) //Brianna D.- When Ruby hits slime, reduce speed
         {
             if (isInvincible)
                 return;
@@ -250,10 +251,10 @@ public class RubyController : MonoBehaviour
             alteredSpeedTimer = timeAltered;
 
             animator.SetTrigger("Hit");
-            PlaySound(hitSlime); //Brianna D. This is where I was ablt to add the audio clip for when Ruby hits a Slime Monster
+            PlaySound(hitSlime); //Brianna D. added the audio clip for when Ruby hits a Slime Monster
         }
 
-        if (amount > 0) //When Ruby picks up the PowerPickup, speed is increased
+        if (amount > 0) //Hadassah R. - When Ruby picks up the PowerPickup, speed is increased
         {
 
             isInvincible = true;
@@ -264,10 +265,7 @@ public class RubyController : MonoBehaviour
 
         }
 
-
-
-
-        currentSpeed = Mathf.Clamp(currentSpeed + amount, 1, 5); //how to I change this for speed?
+        currentSpeed = Mathf.Clamp(currentSpeed + amount, 1, 5); 
 
     }
 

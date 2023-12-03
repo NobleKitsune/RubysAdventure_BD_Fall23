@@ -15,6 +15,7 @@ public class EnemyController : MonoBehaviour
     int direction = 1;
     bool broken = true;
 
+
     Animator animator;
 
     private RubyController rubyController; // this line of code creates a variable called "rubyController" to store information about the RubyController script!
@@ -105,12 +106,15 @@ public class EnemyController : MonoBehaviour
     //Public because we want to call it from elsewhere like the projectile script
     public void Fix()
     {
+        
         broken = false;
         rigidbody2D.simulated = false;
 
         animator.SetTrigger("Fixed");
 
         smokeEffect.Stop();
+
+       
 
         if (rubyController != null)
         {
